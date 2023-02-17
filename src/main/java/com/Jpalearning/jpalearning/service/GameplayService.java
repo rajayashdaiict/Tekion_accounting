@@ -77,6 +77,23 @@ public class GameplayService {
                                .match(gameplayDto.getMatch()).build();
         inningRepository.save(inning2);
 
+        for (BattingScoreCardDto battingScoreCardDto : inning2ScoreCardDto.getBattingScoreCardDtolist()) {
+            BattingScoreCard battingScoreCard = BattingScoreCard.builder().batsman(battingScoreCardDto.getPlayer())
+                                                                .balls(battingScoreCardDto.getBalls())
+                                                                .isOut(battingScoreCardDto.isOut())
+                                                                .runs(battingScoreCardDto.getRuns()).inning(inning2)
+                                                                .build();
+            battingScoreCardRepository.save(battingScoreCard);
+        }
+        for (BowlingScoreCardDto bowlingScoreCardDto : inning2ScoreCardDto.getBowlingScoreCardDtolist()) {
+            BowlingScoreCard bowlingScoreCard = BowlingScoreCard.builder().inning(inning2)
+                                                                .overs(bowlingScoreCardDto.getOversBowled())
+                                                                .runsGiven(bowlingScoreCardDto.getRunsGiven())
+                                                                .wicketsTaken(bowlingScoreCardDto.getWicketsTaken())
+                                                                .bowler(bowlingScoreCardDto.getPlayer()).build();
+            bowlingScoreCardRepository.save(bowlingScoreCard);
+        }
+
 
         System.out.println("----checkpoint--- playservice finished for inning 2");
 

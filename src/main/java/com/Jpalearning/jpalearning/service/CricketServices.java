@@ -76,6 +76,8 @@ public class CricketServices {
 
         System.out.println("----checkpoint--- gameplayservice done");
 
+        match.setWinner(winnerTeam);
+
         matchRepository.save(match);
 
         return winnerTeam.getName();

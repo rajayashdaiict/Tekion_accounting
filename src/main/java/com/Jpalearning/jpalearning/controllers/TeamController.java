@@ -23,12 +23,12 @@ public class TeamController {
             return "Error";
     }
 
-//    @DeleteMapping("/{id}")
-//    public String deleteTeam(@PathVariable int id){
-//        if(teamServices.deleteTeam(id)) return "Success";
-//        else
-//            return "Error";
-//    }
+    @DeleteMapping("/{id}")
+    public String deleteTeam(@PathVariable int id){
+        if(teamServices.deleteTeam(id)) return "Success";
+        else
+            return "Error";
+    }
 
     @GetMapping("/{id}")
     public Optional<TeamDto> getTeam(@PathVariable int id){

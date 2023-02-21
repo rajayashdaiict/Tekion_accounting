@@ -34,7 +34,8 @@ public class TeamServices {
             for(Player player:players){
                 player.setTeam(null);
             }
-            teamRepository.delete(team.get());
+            team.get().setDeleted(true);
+            teamRepository.save(team.get());
             return true;
         }
     }

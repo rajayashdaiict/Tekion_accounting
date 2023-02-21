@@ -33,6 +33,9 @@ public class MatchServices {
         if (team1.isEmpty() || team2.isEmpty()) {
             return 0;
         }
+        if(team1.get().isDeleted()||team2.get().isDeleted()){
+            return 0;
+        }
         System.out.println("checkpoint 2----------------------------------------   -------");
         team1.get().setPlayers(new ArrayList<>());
         team2.get().setPlayers(new ArrayList<>());
@@ -61,6 +64,9 @@ public class MatchServices {
 
         //transactional here
         if(team1.isPresent()){
+            if(team1.get().isDeleted()){
+                return "cant update the match : team deleted";
+            }
             team1.get().setPlayers(new ArrayList<>());
             if(!addPlayersIntoTeam(matchCreateDto.getPlayerIdsTeam1(),team1.get())){
                 return "cant update the match";
@@ -68,6 +74,9 @@ public class MatchServices {
             match.get().setTeam1(team1.get());
         }
         if(team2.isPresent()){
+            if(team2.get().isDeleted()){
+                return "cant update the match : team deleted";
+            }
             team2.get().setPlayers(new ArrayList<>());
             if(!addPlayersIntoTeam(matchCreateDto.getPlayerIdsTeam2(),team2.get())){
                 return "cant update the match";

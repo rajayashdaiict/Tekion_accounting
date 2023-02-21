@@ -25,4 +25,7 @@ public class Team {
 
     @OneToMany(mappedBy = "team")
     private List<Player> allPlayers;
+
+    @Builder.Default
+    private boolean isDeleted = false;
 }

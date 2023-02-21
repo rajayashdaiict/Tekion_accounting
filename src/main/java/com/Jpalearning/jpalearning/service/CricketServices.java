@@ -11,6 +11,7 @@ import com.Jpalearning.jpalearning.utils.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,11 +28,6 @@ public class CricketServices {
     GameplayService gameplayService;
 
 
-    public boolean addPlayer(AddPlayerDto addPlayerDto) {
-        Player player = Player.builder().name(addPlayerDto.getName()).build();
-        playerRepository.save(player);
-        return true;
-    }
 
     public boolean addPlayerIntoTeam(AddPlayerIntoTeamDto addPlayerIntoTeamDto) {
 
@@ -47,24 +43,20 @@ public class CricketServices {
 
         team.get().setPlayers(List.of(player.get()));
         System.out.println(team.get().getPlayers());
-//        teamRepository.save(team.get());
         player.get().setTeam(team.get());
         playerRepository.save(player.get());
         return true;
     }
 
-    public boolean addTeam(AddTeamDto addTeamDto) {
-        Team team = Team.builder().name(addTeamDto.getName()).build();
-        teamRepository.save(team);
-        return true;
-    }
 
-    public String matchPlay(MatchPlayDto matchPlayDto) {
+    public MatchResultDto matchPlay(MatchPlayDto matchPlayDto) {
         //getting teams from their team ids
         Optional<Team> team1 = teamRepository.findById(matchPlayDto.getTeam1Id());
         Optional<Team> team2 = teamRepository.findById(matchPlayDto.getTeam2Id());
+        MatchResultDto matchResultDto = new MatchResultDto();
         if(team1.isEmpty()||team2.isEmpty()){
-            return "Teams does not exist";
+            matchResultDto.setErrorMsg("Teams does not exist");
+            return matchResultDto;
         }
         Match match = Match.builder().overs(matchPlayDto.getOvers()).team1(team1.get()).team2(team2.get()).build();
         matchRepository.save(match);
@@ -79,7 +71,24 @@ public class CricketServices {
         match.setWinner(winnerTeam);
 
         matchRepository.save(match);
+        System.out.println("temp checkpoint");
+        matchResultDto.setWinnerTeam(winnerTeam);
 
-        return winnerTeam.getName();
+        return matchResultDto;
+    }
+
+    public String tournamentPlay(TournamentDto tournamentDto) {
+        //checking if tournament is possible or not
+        int totalNumberOfTeams = tournamentDto.getTeamIds().size();
+        while(totalNumberOfTeams>0&&totalNumberOfTeams%2==0){
+            totalNumberOfTeams=totalNumberOfTeams/2;
+        }
+        if(totalNumberOfTeams!=0){
+            return "tournament not possible";
+        }
+
+        //entering a list and getting a list back
+        List<Integer> playingTeams;
+        return null;
     }
 }

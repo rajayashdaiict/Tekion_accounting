@@ -17,7 +17,7 @@ public class BowlingScoreCard {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "batsman")
     private Player bowler;
     private int overs;

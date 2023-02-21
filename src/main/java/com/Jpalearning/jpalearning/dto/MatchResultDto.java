@@ -1,5 +1,6 @@
 package com.Jpalearning.jpalearning.dto;
 
+import com.Jpalearning.jpalearning.Entity.Team;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddPlayerDto {
-    private String name;
+public class MatchResultDto {
+    private String errorMsg;
+    private Team winnerTeam;
 }

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddPlayerDto {
+public class PlayerDto {
+    private int id;
     private String name;
+    private String teamName;
 }

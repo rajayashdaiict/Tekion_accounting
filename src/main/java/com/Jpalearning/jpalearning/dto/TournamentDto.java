@@ -4,9 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddPlayerDto {
-    private String name;
+public class TournamentDto {
+    private int overs;
+    private List<Integer> teamIds;
 }

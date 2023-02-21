@@ -17,7 +17,7 @@ public class BattingScoreCard {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "batsman")
     private Player batsman;
     private int runs;

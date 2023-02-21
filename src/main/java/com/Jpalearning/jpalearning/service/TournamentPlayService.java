@@ -19,7 +19,7 @@ public class TournamentPlayService {
             Team team1 = selectTeam(teams);
             Team team2 = selectTeam(teams);
             MatchPlayDto matchPlayDto = new MatchPlayDto(team1.getId(), team2.getId(), overs);
-            MatchResultDto matchResultDto = cricketServices.matchPlay(matchPlayDto);
+            MatchResultDto matchResultDto = cricketServices.matchPlay(0);
             if(matchResultDto.getErrorMsg()!=null){
                 //return null
                 return Optional.empty();

@@ -49,4 +49,13 @@ public class PlayerServices {
             return "player updated";
         }
     }
+    public boolean softDelete(int id){
+        Optional<Player> player = playerRepository.findById(id);
+        if(player.isEmpty()){
+            return false;
+        }
+        player.get().setDeleted(true);
+        playerRepository.save(player.get());
+        return true;
+    }
 }

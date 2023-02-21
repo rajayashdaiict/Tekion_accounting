@@ -23,14 +23,14 @@ public class PlayerController {
             return "Error";
     }
 
-//    @DeleteMapping("/{id}")
-//    public String deletePlayer(@PathVariable int id){
-//        if(playerServices.deletePlayer(id)){
-//            return "Success";
-//        }
-//        else
-//            return "Error";
-//    }
+    @DeleteMapping("/{id}")
+    public String deletePlayer(@PathVariable int id){
+        if(playerServices.softDelete(id)){
+            return "Success";
+        }
+        else
+            return "Error";
+    }
     @GetMapping("/{id}")
     public Optional<PlayerDto> getPlayer(@PathVariable int id){
         return playerServices.getPlayer(id);

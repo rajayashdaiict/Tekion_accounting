@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table
@@ -21,4 +22,7 @@ public class Team {
     private String name;
     @OneToMany(mappedBy = "team")
     private List<Player> players;
+
+    @OneToMany(mappedBy = "team")
+    private List<Player> allPlayers;
 }

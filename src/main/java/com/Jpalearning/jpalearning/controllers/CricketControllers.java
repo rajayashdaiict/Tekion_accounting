@@ -22,9 +22,9 @@ public class CricketControllers {
             return "Error";
     }
 
-    @PostMapping("/play")
-    public String matchPlay(@RequestBody MatchPlayDto matchPlayDto){
-        MatchResultDto matchResultDto = cricketServices.matchPlay(matchPlayDto);
+    @PostMapping("/play/{id}")
+    public String matchPlay(@PathVariable int id){
+        MatchResultDto matchResultDto = cricketServices.matchPlay(id);
         if(matchResultDto.getErrorMsg()!=null){
             return matchResultDto.getErrorMsg();
         }

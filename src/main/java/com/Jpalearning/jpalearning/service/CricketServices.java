@@ -1,8 +1,6 @@
 package com.Jpalearning.jpalearning.service;
 
-import com.Jpalearning.jpalearning.Entity.Match;
-import com.Jpalearning.jpalearning.Entity.Player;
-import com.Jpalearning.jpalearning.Entity.Team;
+import com.Jpalearning.jpalearning.Entity.*;
 import com.Jpalearning.jpalearning.dto.*;
 import com.Jpalearning.jpalearning.repository.MatchRepository;
 import com.Jpalearning.jpalearning.repository.PlayerRepository;
@@ -42,12 +40,11 @@ public class CricketServices {
         }
 
         team.get().setPlayers(List.of(player.get()));
-        System.out.println(team.get().getPlayers());
+//        System.out.println(team.get().getPlayers());
         player.get().setTeam(team.get());
         playerRepository.save(player.get());
         return true;
     }
-
 
     public MatchResultDto matchPlay(MatchPlayDto matchPlayDto) {
         //getting teams from their team ids
@@ -76,6 +73,46 @@ public class CricketServices {
 
         return matchResultDto;
     }
+
+    public Optional<ScoreCardOutputDto> scorecard(int matchId){
+
+        Match match;
+        if(matchRepository.findById(matchId).isEmpty()){
+            return Optional.empty();
+        }
+        else
+            match=matchRepository.findById(matchId).get();
+        ScoreCardOutputDto scoreCardOutputDto = new ScoreCardOutputDto();
+        scoreCardOutputDto.setMatchId(matchId);
+        scoreCardOutputDto.setTeam1Id(match.getTeam1().getId());
+        scoreCardOutputDto.setTeam2Id(match.getTeam2().getId());
+
+        List<Inning> innings = match.getInning();
+        for(Inning inning : innings){
+            System.out.println(inning.getInningId());
+            List<BattingScoreCard> battingScoreCards = inning.getBattingScoreCards();
+            for(BattingScoreCard battingScoreCard : battingScoreCards){
+                BattingScoreCardOutputDto battingScoreCardOutputDto =
+                        new BattingScoreCardOutputDto(battingScoreCard.getBatsman().getName(),
+                                inning.getBattingTeam().getName(),battingScoreCard.getRuns(),
+                                battingScoreCard.getBalls(), battingScoreCard.isOut(),
+                                inning.getInningId().getInningNum());
+                scoreCardOutputDto.getBatsmanDetails().add(battingScoreCardOutputDto);
+            }
+
+            List<BowlingScoreCard> bowlingScoreCards = inning.getBowlingScoreCards();
+            for(BowlingScoreCard bowlingScoreCard : bowlingScoreCards){
+                BowlingScoreCardOutputDto bowlingScoreCardOutputDto =
+                        new BowlingScoreCardOutputDto(bowlingScoreCard.getBowler().getName(),
+                                inning.getBowlingTeam().getName(), bowlingScoreCard.getOvers(),
+                                bowlingScoreCard.getRunsGiven(), bowlingScoreCard.getWicketsTaken(),inning.getInningId().getInningNum());
+                scoreCardOutputDto.getBowlersDetails().add(bowlingScoreCardOutputDto);
+            }
+        }
+        return Optional.of(scoreCardOutputDto);
+
+    }
+
 
     public String tournamentPlay(TournamentDto tournamentDto) {
         //checking if tournament is possible or not

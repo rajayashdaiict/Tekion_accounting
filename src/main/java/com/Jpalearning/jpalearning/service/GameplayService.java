@@ -37,6 +37,10 @@ public class GameplayService {
 
         ScoreCardDto inning1ScoreCardDto = playService.play(inningTeamsDto, gameplayDto.getOvers(), scoreCardDto);
 
+        for(BowlingScoreCardDto bowlingScoreCardDto :inning1ScoreCardDto.getBowlingScoreCardDtolist()){
+            System.out.println(bowlingScoreCardDto.getPlayer().getName());
+        }
+
         Inning inning1 = Inning.builder().inningId(new InningId(gameplayDto.getMatch().getId(), 1))
                                .match(gameplayDto.getMatch()).battingTeam(inningTeamsDto.getBattingTeam())
                                .bowlingTeam(inningTeamsDto.getBowlingTeam()).totalRuns(inning1ScoreCardDto.getRuns())
@@ -61,7 +65,11 @@ public class GameplayService {
 
         System.out.println("----checkpoint--- playservice finished for inning 1");
 
-        helper.swapTeams(inningTeamsDto);
+        System.out.println(inningTeamsDto.getBattingTeam().getName());
+        System.out.println(inningTeamsDto.getBowlingTeam().getName());
+        inningTeamsDto = helper.swapTeams(inningTeamsDto);
+        System.out.println(inningTeamsDto.getBattingTeam().getName());
+        System.out.println(inningTeamsDto.getBowlingTeam().getName());
 
         ScoreCardDto scoreCardDto1 = new ScoreCardDto(inningTeamsDto.getBattingTeam(), inningTeamsDto.getBowlingTeam());
 
@@ -70,6 +78,10 @@ public class GameplayService {
 
         ScoreCardDto inning2ScoreCardDto = playService.play(inningTeamsDto, gameplayDto.getOvers(), scoreCardDto1,
                 inning1ScoreCardDto.getRuns() + 1);
+
+        for(BowlingScoreCardDto bowlingScoreCardDto :inning2ScoreCardDto.getBowlingScoreCardDtolist()){
+            System.out.println(bowlingScoreCardDto.getPlayer().getName());
+        }
 
         Inning inning2 = Inning.builder().inningId(new InningId(gameplayDto.getMatch().getId(), 2))
                                .battingTeam(inningTeamsDto.getBattingTeam())

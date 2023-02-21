@@ -3,10 +3,9 @@ package com.Jpalearning.jpalearning.controllers;
 import com.Jpalearning.jpalearning.dto.*;
 import com.Jpalearning.jpalearning.service.CricketServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 public class CricketControllers {
@@ -33,7 +32,10 @@ public class CricketControllers {
             return matchResultDto.getWinnerTeam().getName();
         }
     }
-
+    @GetMapping("/scorecard/{id}")
+    public Optional<ScoreCardOutputDto> getScorecard(@PathVariable int id){
+        return cricketServices.scorecard(id);
+    }
     public String tournamentPlay(@RequestBody TournamentDto tournamentDto){
         return cricketServices.tournamentPlay(tournamentDto);
     }

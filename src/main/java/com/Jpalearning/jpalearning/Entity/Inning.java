@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table
@@ -17,10 +18,10 @@ public class Inning {
 
     @EmbeddedId
     private InningId inningId;
-    @OneToOne(mappedBy = "inning",cascade = CascadeType.ALL)
-    private BattingScoreCard  battingScoreCard;
-    @OneToOne(mappedBy = "inning",cascade = CascadeType.ALL)
-    private BowlingScoreCard bowlingScoreCard;
+    @OneToMany(mappedBy = "inning",cascade = CascadeType.ALL)
+    private List<BattingScoreCard> battingScoreCards;
+    @OneToMany(mappedBy = "inning",cascade = CascadeType.ALL)
+    private List<BowlingScoreCard> bowlingScoreCards;
     @OneToOne
     @JoinColumn(name = "battingTeam")
     private Team battingTeam;

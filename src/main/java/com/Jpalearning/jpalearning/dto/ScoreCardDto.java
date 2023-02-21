@@ -18,8 +18,6 @@ public class ScoreCardDto {
         this.battingTeam=battingTeam;
         this.bowlingTeam=bowlingTeam;
 
-        System.out.println("in the constructor "+battingTeam.getName());
-
         for(int i=0;i<battingTeam.getPlayers().size();i++){
             battingScoreCardDtolist.add(new BattingScoreCardDto(battingTeam.getPlayers().get(i)));
         }

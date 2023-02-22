@@ -55,6 +55,7 @@ public class PlayerServices {
             return false;
         }
         player.get().setDeleted(true);
+        player.get().setTeam(null);
         playerRepository.save(player.get());
         return true;
     }

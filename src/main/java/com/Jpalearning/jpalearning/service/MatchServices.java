@@ -83,6 +83,7 @@ public class MatchServices {
             }
             match.get().setTeam2(team2.get());
         }
+        matchRepository.save(match.get());
         return "match updated";
     }
     public String getMatch(int matchId){

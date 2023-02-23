@@ -21,8 +21,12 @@ public class GameplayService {
     BattingScoreCardRepository battingScoreCardRepository;
     @Autowired
     BowlingScoreCardRepository bowlingScoreCardRepository;
+    @Autowired
+    MongoServices mongoServices;
 
     public Team gameplay(GameplayDto gameplayDto) {
+
+        mongoServices.addMatch(gameplayDto.getMatch().getId(),gameplayDto.getTeam1().getId(),gameplayDto.getTeam2().getId());
 
         InningTeamsDto inningTeamsDto = helper.toss(gameplayDto);
 
@@ -110,8 +114,10 @@ public class GameplayService {
         System.out.println("----checkpoint--- playservice finished for inning 2");
 
         if (inning1ScoreCardDto.getRuns() > inning2ScoreCardDto.getRuns()) {
+            mongoServices.setWinner(inning1ScoreCardDto.getBattingTeam().getId());
             return inning1ScoreCardDto.getBattingTeam();
         } else {
+            mongoServices.setWinner(inning2ScoreCardDto.getBattingTeam().getId());
             return inning2ScoreCardDto.getBattingTeam();
         }
 

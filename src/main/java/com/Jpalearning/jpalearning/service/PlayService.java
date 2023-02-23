@@ -3,10 +3,14 @@ package com.Jpalearning.jpalearning.service;
 import com.Jpalearning.jpalearning.Entity.Player;
 import com.Jpalearning.jpalearning.Entity.Team;
 import com.Jpalearning.jpalearning.dto.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PlayService {
+
+    @Autowired
+    MongoServices mongoServices;
 
     public ScoreCardDto play(InningTeamsDto inningTeamsDto, int overs, ScoreCardDto scoreCardDto) {
         return play(inningTeamsDto, overs , scoreCardDto , null);
@@ -33,7 +37,10 @@ public class PlayService {
         for (int i = 0; i < overs; i++) {
             for (int j = 0; j < 6; j++) {
                 Ball ball = new Ball();
-                addBall(ball, batsman1, bowler, scoreCardDto);
+                if(target==null)
+                    addBall(ball, batsman1, bowler, scoreCardDto,1);
+                else
+                    addBall(ball,batsman1,bowler,scoreCardDto,2);
                 if (ball.getOutcome() == 7) {
                     batsman1 = selectBatsman(battingTeam, batsmanNum++);
                     if (batsman1 == null) {
@@ -59,7 +66,8 @@ public class PlayService {
         return scoreCardDto;
     }
 
-    private void addBall(Ball ball, Player batsman1, Player bowler, ScoreCardDto scoreCardDto) {
+    private void addBall(Ball ball, Player batsman1, Player bowler, ScoreCardDto scoreCardDto,int inningNum) {
+        mongoServices.addBall(ball,batsman1,bowler,inningNum);
         //batsman update
         for (BattingScoreCardDto battingScoreCardDto : scoreCardDto.getBattingScoreCardDtolist()) {
             if (battingScoreCardDto.getPlayer() == batsman1) {

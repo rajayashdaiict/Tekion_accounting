@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -24,6 +25,8 @@ public class MatchServices {
     PlayerRepository playerRepository;
     @Autowired
     MatchRepository matchRepository;
+    @Autowired
+    MongoServices mongoServices;
 
     public int createMatch(MatchCreateDto matchCreateDto) {
         System.out.println("checkpoint 1------------------------------------------------");
@@ -86,13 +89,14 @@ public class MatchServices {
         matchRepository.save(match.get());
         return "match updated";
     }
-    public String getMatch(int matchId){
+    public Object getMatch(int matchId){
         Optional<Match> match = matchRepository.findById(matchId);
         if(match.isEmpty()){
             return "no match found";
         }
         if(match.get().getWinner()!=null){
-            return "match has already been played and winner is"+ match.get().getWinner().getName();
+            return mongoServices.getMatch(matchId);
+//            return "match has already been played and winner is"+ match.get().getWinner().getName();
         }
         else {
             return "match will be playing between "+match.get().getTeam1().getName()+" and "+match.get().getTeam2().getName();

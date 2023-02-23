@@ -8,6 +8,8 @@ import com.Jpalearning.jpalearning.repository.MatchMongoRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class MongoServices {
     @Autowired
@@ -20,7 +22,7 @@ public class MongoServices {
             matchMongo.getInning1Details().add(ballMongo);
         }
         if(inningNum==2){
-            ballMongo.setBallNumber(matchMongo.getInning1Details().size()+1);
+            ballMongo.setBallNumber(matchMongo.getInning2Details().size()+1);
             matchMongo.getInning2Details().add(ballMongo);
         }
     }
@@ -32,6 +34,10 @@ public class MongoServices {
     public void setWinner(int winnerTeamId){
         matchMongo.setWinnerTeamId(winnerTeamId);
         matchMongoRepo.save(matchMongo);
+    }
+    public Optional<MatchMongo> getMatch(int matchId){
+        Optional<MatchMongo> byMatchId = matchMongoRepo.findByMatchId(matchId);
+        return byMatchId;
     }
 
 }

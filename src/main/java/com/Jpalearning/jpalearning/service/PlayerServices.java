@@ -14,20 +14,34 @@ public class PlayerServices {
     @Autowired
     PlayerRepository playerRepository;
     public boolean addPlayer(AddPlayerDto addPlayerDto) {
+
+        if(addPlayerDto.getName()==null||addPlayerDto.getName().isEmpty())
+            return false;
+
         Player player = Player.builder().name(addPlayerDto.getName()).build();
         playerRepository.save(player);
         return true;
     }
+
+    //if you want to delete data of player from repository
     public boolean deletePlayer(int id){
         Optional<Player> player = playerRepository.findById(id);
         player.ifPresent(value -> playerRepository.delete(value));
         return true;
     }
+
     public Optional<PlayerDto> getPlayer(int id){
         Optional<Player> player = playerRepository.findById(id);
+
         if(player.isEmpty())
             return Optional.empty();
         PlayerDto playerDto = new PlayerDto();
+
+        if(player.get().isDeleted()){
+            playerDto.setDeleted(true);
+            return Optional.of(playerDto);
+        }
+
         playerDto.setName(player.get().getName());
         playerDto.setId(player.get().getId());
         if(player.get().getTeam()!=null){
@@ -39,11 +53,14 @@ public class PlayerServices {
     public String  updatePlayer(int id,AddPlayerDto addPlayerDto){
         Optional<Player> player = playerRepository.findById(id);
         if(player.isEmpty()){
-            Player newPlayer = Player.builder().name(addPlayerDto.getName()).build();
-            playerRepository.save(newPlayer);
-            return "new player created";
+            if(addPlayer(addPlayerDto))
+                return "new player created";
+            else
+                return "cant update player";
         }
         else {
+            if(addPlayerDto.getName()==null||addPlayerDto.getName().isEmpty())
+                return "cant update player";
             player.get().setName(addPlayerDto.getName());
             playerRepository.save(player.get());
             return "player updated";

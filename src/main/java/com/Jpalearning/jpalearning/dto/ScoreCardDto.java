@@ -2,6 +2,7 @@ package com.Jpalearning.jpalearning.dto;
 
 import com.Jpalearning.jpalearning.Entity.Team;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ public class ScoreCardDto {
 
     public ScoreCardDto(Team battingTeam,Team bowlingTeam){
 
+//        this();
         this.battingTeam=battingTeam;
         this.bowlingTeam=bowlingTeam;
 

@@ -21,7 +21,6 @@ public class Player {
     @OneToOne
     @JoinColumn(name ="team_id")
     private Team team;
-
     @Builder.Default
     private boolean isDeleted=false;
 

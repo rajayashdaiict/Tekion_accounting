@@ -21,7 +21,8 @@ public class Match {
     private int overs;
     @OneToOne
     @JoinColumn(name = "winnerTeam")
-    private Team winner;
+    @Builder.Default
+    private Team winner=null;
     @OneToOne
     @JoinColumn(name = "Team1")
     private Team team1;

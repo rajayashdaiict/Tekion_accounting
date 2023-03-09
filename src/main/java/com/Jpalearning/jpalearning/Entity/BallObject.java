@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BallMongo {
+public class BallObject {
     private int outcome;
     private int batsmanId;
     private int bowlerId;
     private int ballNumber;
 
-    public BallMongo(int outcome, int batsmanId, int bowlerId) {
+    public BallObject(int outcome, int batsmanId, int bowlerId) {
         this.outcome = outcome;
         this.batsmanId = batsmanId;
         this.bowlerId = bowlerId;

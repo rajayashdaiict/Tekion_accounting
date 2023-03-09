@@ -26,24 +26,18 @@ public class GameplayService {
 
     public Team gameplay(GameplayDto gameplayDto) {
 
-        mongoServices.addMatch(gameplayDto.getMatch().getId(),gameplayDto.getTeam1().getId(),gameplayDto.getTeam2().getId());
+        mongoServices.addMatch(gameplayDto.getMatch().getId(), gameplayDto.getTeam1().getId(),
+                gameplayDto.getTeam2().getId());
 
         InningTeamsDto inningTeamsDto = helper.toss(gameplayDto);
 
-        System.out.println("-------checkpoint----- toss done");
-        System.out.println(inningTeamsDto.getBattingTeam().getName());
-
         ScoreCardDto scoreCardDto = new ScoreCardDto(inningTeamsDto.getBattingTeam(), inningTeamsDto.getBowlingTeam());
 
-        System.out.println("hello");
-
-        System.out.println("----checkpoint--- playservice started for inning 1");
+        System.out.println("dsahj");
 
         ScoreCardDto inning1ScoreCardDto = playService.play(inningTeamsDto, gameplayDto.getOvers(), scoreCardDto);
 
-        for(BowlingScoreCardDto bowlingScoreCardDto :inning1ScoreCardDto.getBowlingScoreCardDtolist()){
-            System.out.println(bowlingScoreCardDto.getPlayer().getName());
-        }
+        System.out.println(inning1ScoreCardDto.getRuns());
 
         Inning inning1 = Inning.builder().inningId(new InningId(gameplayDto.getMatch().getId(), 1))
                                .match(gameplayDto.getMatch()).battingTeam(inningTeamsDto.getBattingTeam())
@@ -67,25 +61,14 @@ public class GameplayService {
             bowlingScoreCardRepository.save(bowlingScoreCard);
         }
 
-        System.out.println("----checkpoint--- playservice finished for inning 1");
-
-        System.out.println(inningTeamsDto.getBattingTeam().getName());
-        System.out.println(inningTeamsDto.getBowlingTeam().getName());
         inningTeamsDto = helper.swapTeams(inningTeamsDto);
-        System.out.println(inningTeamsDto.getBattingTeam().getName());
-        System.out.println(inningTeamsDto.getBowlingTeam().getName());
 
         ScoreCardDto scoreCardDto1 = new ScoreCardDto(inningTeamsDto.getBattingTeam(), inningTeamsDto.getBowlingTeam());
 
 
-        System.out.println("----checkpoint--- playservice started for inning 2");
-
         ScoreCardDto inning2ScoreCardDto = playService.play(inningTeamsDto, gameplayDto.getOvers(), scoreCardDto1,
                 inning1ScoreCardDto.getRuns() + 1);
 
-        for(BowlingScoreCardDto bowlingScoreCardDto :inning2ScoreCardDto.getBowlingScoreCardDtolist()){
-            System.out.println(bowlingScoreCardDto.getPlayer().getName());
-        }
 
         Inning inning2 = Inning.builder().inningId(new InningId(gameplayDto.getMatch().getId(), 2))
                                .battingTeam(inningTeamsDto.getBattingTeam())
@@ -110,8 +93,6 @@ public class GameplayService {
             bowlingScoreCardRepository.save(bowlingScoreCard);
         }
 
-
-        System.out.println("----checkpoint--- playservice finished for inning 2");
 
         if (inning1ScoreCardDto.getRuns() > inning2ScoreCardDto.getRuns()) {
             mongoServices.setWinner(inning1ScoreCardDto.getBattingTeam().getId());

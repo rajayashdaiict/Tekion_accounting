@@ -37,9 +37,10 @@ public class CricketServices {
         }
 
         Optional<Team> team = teamRepository.findById(addPlayerIntoTeamDto.getTeamId());
-        if (team.isEmpty()) {
+        if (team.isEmpty()||team.get().isDeleted()) {
             return false;
         }
+
         team.get().getAllPlayers().add(player.get());
         player.get().setTeam(team.get());
         playerRepository.save(player.get());
@@ -121,6 +122,10 @@ public class CricketServices {
         scoreCardOutputDto.setMatchId(matchId);
         scoreCardOutputDto.setTeam1Id(match.getTeam1().getId());
         scoreCardOutputDto.setTeam2Id(match.getTeam2().getId());
+
+        if(match.getWinner()==null){
+            return Optional.of(scoreCardOutputDto);
+        }
 
         List<Inning> innings = match.getInning();
         for (Inning inning : innings) {

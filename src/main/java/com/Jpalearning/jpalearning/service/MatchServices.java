@@ -29,26 +29,28 @@ public class MatchServices {
     MongoServices mongoServices;
 
     public int createMatch(MatchCreateDto matchCreateDto) {
-        System.out.println("checkpoint 1------------------------------------------------");
+
+        System.out.println("hello");
         //getting teams from team ids
         Optional<Team> team1 = teamRepository.findById(matchCreateDto.getTeam1Id());
         Optional<Team> team2 = teamRepository.findById(matchCreateDto.getTeam2Id());
+
         if (team1.isEmpty() || team2.isEmpty()) {
             return 0;
         }
         if(team1.get().isDeleted()||team2.get().isDeleted()){
             return 0;
         }
-        System.out.println("checkpoint 2----------------------------------------   -------");
         team1.get().setPlayers(new ArrayList<>());
         team2.get().setPlayers(new ArrayList<>());
 
-        System.out.println("checkpoint 3----------------------------------------   -------");
         //transactional
+        //previous match team details
+        System.out.println(matchCreateDto.getPlayerIdsTeam1());
         if(!addPlayersIntoTeam(matchCreateDto.getPlayerIdsTeam1(),team1.get())||!addPlayersIntoTeam(matchCreateDto.getPlayerIdsTeam2(),team2.get())){
+            System.out.println("fuck you");
             return 0;
         }
-        System.out.println("checkpoint 4----------------------------------------   -------");
         Match match = Match.builder().team1(team1.get()).team2(team2.get()).overs(matchCreateDto.getOvers()).build();
         matchRepository.save(match);
         return match.getId();
@@ -95,35 +97,32 @@ public class MatchServices {
             return "no match found";
         }
         if(match.get().getWinner()!=null){
-            return mongoServices.getMatch(matchId);
-//            return "match has already been played and winner is"+ match.get().getWinner().getName();
+            return mongoServices.getMatchES(matchId);
+//            return mongoServices.getMatch(matchId);
         }
         else {
             return "match will be playing between "+match.get().getTeam1().getName()+" and "+match.get().getTeam2().getName();
         }
     }
+    //its given that team will not be null or deleted
     public boolean addPlayersIntoTeam(List<Integer> playerIds, Team team) {
-        if(playerIds==null)
+        System.out.println("fuck you again");
+        if(playerIds==null||playerIds.isEmpty())
             return false;
         for (Integer playerId : playerIds) {
 
-            System.out.println("checkpoint 1.1----------------------------------------   -------");
             Optional<Player> player = playerRepository.findById(playerId);
             if (player.isEmpty()) return false;
             if(player.get().isDeleted()) return false;
 
-            System.out.println("checkpoint 1.2----------------------------------------   -------");
             player.get().setTeam(team);
             playerRepository.save(player.get());
 
-            System.out.println("checkpoint 1.3----------------------------------------   -------");
             team.getAllPlayers().add(player.get());
-            System.out.println("checkpoint 1.5----------------------------------------   -------");
             team.getPlayers().add(player.get());
 
-            teamRepository.save(team);
-            System.out.println("checkpoint 1.4----------------------------------------   -------");
         }
+        teamRepository.save(team);
         return true;
     }
 

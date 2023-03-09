@@ -18,7 +18,10 @@ public class TeamServices {
     @Autowired
     TeamRepository teamRepository;
     public boolean addTeam(AddTeamDto addTeamDto) {
-        System.out.println(addTeamDto.getName());
+
+        if(addTeamDto.getName()==null||addTeamDto.getName().isEmpty())
+            return false;
+
         Team team = Team.builder().name(addTeamDto.getName()).build();
         teamRepository.save(team);
         return true;
@@ -34,6 +37,7 @@ public class TeamServices {
             for(Player player:players){
                 player.setTeam(null);
             }
+            //team has no player left check
             team.get().setDeleted(true);
             teamRepository.save(team.get());
             return true;
@@ -44,26 +48,37 @@ public class TeamServices {
         Optional<Team> team = teamRepository.findById(id);
         if(team.isEmpty()){
             return Optional.empty();
-        }
-        else{
+        } else if (team.get().isDeleted()) {
+            return Optional.of(TeamDto.builder().isDeleted(true).build());
+        } else{
             List<Player> players = team.get().getPlayers();
+            List<Player> allPlayers = team.get().getAllPlayers();
+
             List<Integer> playerIds = new ArrayList<>();
+            List<Integer> allPlayerIds = new ArrayList<>();
             for(Player player : players){
                 playerIds.add(player.getId());
             }
-            TeamDto teamDto = new TeamDto(team.get().getId(),team.get().getName(),playerIds);
-            return Optional.of(teamDto);
+            for(Player player : allPlayers){
+                allPlayerIds.add(player.getId());
+            }
+            return Optional.of(
+                    TeamDto.builder().name(team.get().getName()).id(team.get().getId()).currentPlayerIds(playerIds).allPlayerIds(allPlayerIds).build());
+
         }
     }
 
     public String updateTeam(int id, AddTeamDto addTeamDto){
         Optional<Team> team = teamRepository.findById(id);
         if (team.isEmpty()){
-            Team newTeam = Team.builder().name(addTeamDto.getName()).build();
-            teamRepository.save(newTeam);
-            return "new Team made";
+            if(addTeam(addTeamDto))
+                return "new Team made";
+            else
+                return "cant make the new team";
         }
         else {
+            if(addTeamDto.getName()==null||addTeamDto.getName().isEmpty())
+                return "cant update the new team";
             team.get().setName(addTeamDto.getName());
             teamRepository.save(team.get());
             return "team updated";

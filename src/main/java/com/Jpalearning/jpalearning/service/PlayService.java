@@ -105,7 +105,7 @@ public class PlayService {
 
     public Player selectBowler(Team bowlingTeam) {
         int teamSize = bowlingTeam.getPlayers().size();
-        int randomIndex = (int) Math.ceil(Math.random() * teamSize) - 1;
+        int randomIndex = (int) (Math.ceil(Math.random() * teamSize) - 1);
         return bowlingTeam.getPlayers().get(randomIndex);
     }
 

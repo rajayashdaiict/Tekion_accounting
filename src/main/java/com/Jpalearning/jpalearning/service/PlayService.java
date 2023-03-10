@@ -3,6 +3,8 @@ package com.Jpalearning.jpalearning.service;
 import com.Jpalearning.jpalearning.Entity.Player;
 import com.Jpalearning.jpalearning.Entity.Team;
 import com.Jpalearning.jpalearning.dto.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,12 +13,14 @@ public class PlayService {
 
     @Autowired
     MongoServices mongoServices;
+    Logger logger = LoggerFactory.getLogger(PlayService.class);
 
     public ScoreCardDto play(InningTeamsDto inningTeamsDto, int overs, ScoreCardDto scoreCardDto) {
         return play(inningTeamsDto, overs , scoreCardDto , null);
     }
 
     public ScoreCardDto play(InningTeamsDto inningTeamsDto, int overs, ScoreCardDto scoreCardDto, Integer target) {
+        logger.debug("inside play service");
 
         Team battingTeam = inningTeamsDto.getBattingTeam();
         Team bowlingTeam = inningTeamsDto.getBowlingTeam();
@@ -32,7 +36,7 @@ public class PlayService {
             }
         }
 
-        System.out.println("checkpoint2");
+        logger.debug("starting the match simulation");
 
         for (int i = 0; i < overs; i++) {
             for (int j = 0; j < 6; j++) {
@@ -63,6 +67,7 @@ public class PlayService {
                 }
             }
         }
+        logger.info("play service done simulation");
         return scoreCardDto;
     }
 

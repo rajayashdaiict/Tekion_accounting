@@ -5,6 +5,8 @@ import com.Jpalearning.jpalearning.dto.*;
 import com.Jpalearning.jpalearning.repository.BattingScoreCardRepository;
 import com.Jpalearning.jpalearning.repository.BowlingScoreCardRepository;
 import com.Jpalearning.jpalearning.repository.InningRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,20 +26,24 @@ public class GameplayService {
     @Autowired
     MongoServices mongoServices;
 
+    Logger logger = LoggerFactory.getLogger(GameplayService.class);
+
     public Team gameplay(GameplayDto gameplayDto) {
+
+        logger.info("match playing started");
+        logger.debug("inside the gameplay service");
 
         mongoServices.addMatch(gameplayDto.getMatch().getId(), gameplayDto.getTeam1().getId(),
                 gameplayDto.getTeam2().getId());
 
         InningTeamsDto inningTeamsDto = helper.toss(gameplayDto);
+        logger.debug("toss done successfully");
 
         ScoreCardDto scoreCardDto = new ScoreCardDto(inningTeamsDto.getBattingTeam(), inningTeamsDto.getBowlingTeam());
 
-        System.out.println("dsahj");
-
+        logger.debug("inning 1 started playing");
         ScoreCardDto inning1ScoreCardDto = playService.play(inningTeamsDto, gameplayDto.getOvers(), scoreCardDto);
 
-        System.out.println(inning1ScoreCardDto.getRuns());
 
         Inning inning1 = Inning.builder().inningId(new InningId(gameplayDto.getMatch().getId(), 1))
                                .match(gameplayDto.getMatch()).battingTeam(inningTeamsDto.getBattingTeam())
@@ -61,11 +67,13 @@ public class GameplayService {
             bowlingScoreCardRepository.save(bowlingScoreCard);
         }
 
+        logger.debug("inning 1 done playing and saving data of inning 1");
+        logger.info("inning 1 done");
         inningTeamsDto = helper.swapTeams(inningTeamsDto);
 
         ScoreCardDto scoreCardDto1 = new ScoreCardDto(inningTeamsDto.getBattingTeam(), inningTeamsDto.getBowlingTeam());
 
-
+        logger.debug("inning 2 started playing");
         ScoreCardDto inning2ScoreCardDto = playService.play(inningTeamsDto, gameplayDto.getOvers(), scoreCardDto1,
                 inning1ScoreCardDto.getRuns() + 1);
 
@@ -93,11 +101,15 @@ public class GameplayService {
             bowlingScoreCardRepository.save(bowlingScoreCard);
         }
 
+        logger.debug("inning 2 done playing and saving data of inning 2");
+        logger.info("inning 2 done");
 
         if (inning1ScoreCardDto.getRuns() > inning2ScoreCardDto.getRuns()) {
+            logger.debug("data saving in mongo done");
             mongoServices.setWinner(inning1ScoreCardDto.getBattingTeam().getId());
             return inning1ScoreCardDto.getBattingTeam();
         } else {
+            logger.debug("data saving in mongo done");
             mongoServices.setWinner(inning2ScoreCardDto.getBattingTeam().getId());
             return inning2ScoreCardDto.getBattingTeam();
         }

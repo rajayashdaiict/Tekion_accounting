@@ -36,8 +36,6 @@ public class CricketControllers {
     public Optional<ScoreCardOutputDto> getScorecard(@PathVariable int id){
         return cricketServices.scorecard(id);
     }
-    public String tournamentPlay(@RequestBody TournamentDto tournamentDto){
-        return cricketServices.tournamentPlay(tournamentDto);
-    }
+
 
 }

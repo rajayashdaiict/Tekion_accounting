@@ -3,6 +3,8 @@ package com.Jpalearning.jpalearning.service;
 import com.Jpalearning.jpalearning.Entity.Team;
 import com.Jpalearning.jpalearning.dto.GameplayDto;
 import com.Jpalearning.jpalearning.dto.InningTeamsDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +13,10 @@ import java.util.Scanner;
 
 @Service
 public class Helper {
+
+    Logger logger = LoggerFactory.getLogger(Helper.class);
     public InningTeamsDto toss(GameplayDto gameplayDto) {
+        logger.debug("inside toss");
         //select a random team as a tosswinner
         Random rand = new Random();
         int randomInt = rand.nextInt(2) + 1;
@@ -39,6 +44,7 @@ public class Helper {
             inningTeamsDto.setBattingTeam(tossLoser);
             inningTeamsDto.setBowlingTeam(tossWinner);
         }
+        logger.info("toss done");
         return inningTeamsDto;
     }
 

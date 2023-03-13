@@ -58,7 +58,8 @@ public class TeamServicesTest {
 
     @Test
     public void getTeam_TeamWithoutPlayers(){
-        Team team = Team.builder().id(1).name("IND").isDeleted(false).build();
+        Team team =
+                Team.builder().id(1).name("IND").isDeleted(false).allPlayers(new ArrayList<>()).players(new ArrayList<>()).build();
 
         Mockito.when(teamRepository.findById(1)).thenReturn(Optional.of(team));
 
@@ -180,7 +181,7 @@ public class TeamServicesTest {
     @Test
     public void DeleteTeamTest_ReturnTrue_NoPlayers(){
         int id=1;
-        Team team = Team.builder().id(1).name("IND").build();
+        Team team = Team.builder().id(1).name("IND").allPlayers(new ArrayList<>()).players(new ArrayList<>()).build();
 
         Mockito.when(teamRepository.findById(1)).thenReturn(Optional.of(team));
 

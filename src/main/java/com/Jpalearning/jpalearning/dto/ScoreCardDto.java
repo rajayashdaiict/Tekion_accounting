@@ -20,6 +20,8 @@ public class ScoreCardDto {
         this.battingTeam=battingTeam;
         this.bowlingTeam=bowlingTeam;
 
+        if(battingTeam.getPlayers()==null||bowlingTeam.getPlayers()==null)
+            return;
         for(int i=0;i<battingTeam.getPlayers().size();i++){
             battingScoreCardDtolist.add(new BattingScoreCardDto(battingTeam.getPlayers().get(i)));
         }

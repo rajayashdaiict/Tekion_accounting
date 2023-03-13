@@ -90,7 +90,7 @@ public class CricketServicesTest {
     @Test
     public void addPlayerIntoTeamTest_ReturnTrue(){
         Player player = Player.builder().name("yash").id(1).build();
-        Team team = Team.builder().name("IND").id(1).build();
+        Team team = Team.builder().name("IND").id(1).players(new ArrayList<>()).allPlayers(new ArrayList<>()).build();
 
         Mockito.when(playerRepository.findById(1)).thenReturn(Optional.of(player));
         Mockito.when(teamRepository.findById(1)).thenReturn(Optional.of(team));
@@ -132,8 +132,8 @@ public class CricketServicesTest {
     public void matchPlayTest_NotEnoughPlayers(){
 
         int id =1;
-        Team team = Team.builder().name("IND").id(1).build();
-        Team team1 = Team.builder().name("UAS").id(2).build();
+        Team team = Team.builder().name("IND").id(1).allPlayers(new ArrayList<>()).players(new ArrayList<>()).build();
+        Team team1 = Team.builder().name("UAS").id(2).allPlayers(new ArrayList<>()).players(new ArrayList<>()).build();
 
         Match match = Match.builder().team2(team1).team1(team).id(id).build();
 

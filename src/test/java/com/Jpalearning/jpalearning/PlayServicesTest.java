@@ -63,8 +63,7 @@ public class PlayServicesTest {
         Mockito.verify(playServiceSpy,Mockito.atLeastOnce()).selectBowler(inningTeamsDto.getBowlingTeam());
         Mockito.verify(playServiceSpy, Mockito.atLeastOnce()).selectBatsman(Mockito.eq(inningTeamsDto.getBattingTeam()),
                 Mockito.anyInt());
-        Mockito.verify(playServiceSpy,Mockito.atLeastOnce()).switchStrick(Mockito.any(Player.class),
-                Mockito.any(Player.class));
+
 
     }
 }

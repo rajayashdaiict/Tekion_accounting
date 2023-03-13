@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -19,11 +20,14 @@ public class Team {
     private int id;
     private String name;
     @OneToMany(mappedBy = "team")
-    private List<Player> players;
+    private List<Player> players ;
 
     @OneToMany(mappedBy = "team")
-    private List<Player> allPlayers;
+    private List<Player> allPlayers ;
 
     @Builder.Default
     private boolean isDeleted = false;
+
 }
+
+

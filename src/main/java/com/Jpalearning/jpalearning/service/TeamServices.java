@@ -77,6 +77,7 @@ public class TeamServices {
         }
     }
 
+
     public String updateTeam(int id, AddTeamDto addTeamDto){
         logger.debug("updating team {}",id);
         Optional<Team> team = teamRepository.findById(id);
@@ -85,6 +86,7 @@ public class TeamServices {
                 return "new Team made";
             else
                 return "cant make the new team";
+
         }
         else {
             if(addTeamDto.getName()==null||addTeamDto.getName().isEmpty()){

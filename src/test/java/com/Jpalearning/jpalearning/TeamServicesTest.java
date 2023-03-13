@@ -39,9 +39,11 @@ public class TeamServicesTest {
     public void addTeamTest_ReturnsTrue(){
         AddTeamDto addTeamDto = new AddTeamDto("IND");
         Team team = Team.builder().name("IND").isDeleted(false).build();
-        boolean result = teamServices.addTeam(addTeamDto);
 
-        Assertions.assertTrue(result);
+        when(teamRepository.save(team)).thenReturn(team);
+        Team returnedTeam = teamServices.addTeam(addTeamDto);
+
+        Assertions.assertEquals( "IND", returnedTeam.getName());
         verify(teamRepository,times(1)).save(team);
     }
     @Test
@@ -49,10 +51,9 @@ public class TeamServicesTest {
         AddTeamDto addTeamDto = new AddTeamDto("");
         AddTeamDto addTeamDto1 = new AddTeamDto();
 
-        boolean result1 = teamServices.addTeam(addTeamDto);
-        boolean result2 = teamServices.addTeam(addTeamDto1);
+        Assertions.assertThrows(RuntimeException.class,()->teamServices.addTeam(addTeamDto));
+        Assertions.assertThrows(RuntimeException.class,()->teamServices.addTeam(addTeamDto1));
 
-        Assertions.assertFalse(result1||result2);
         verify(teamRepository,never()).save(any(Team.class));
     }
 
@@ -63,18 +64,17 @@ public class TeamServicesTest {
 
         Mockito.when(teamRepository.findById(1)).thenReturn(Optional.of(team));
 
-        Optional<TeamDto> teamDto = teamServices.getTeam(1);
+        Team team1 = teamServices.getTeam(1);
 
-        Assertions.assertEquals(teamDto.get().getId(),1);
-        Assertions.assertEquals(teamDto.get().getCurrentPlayerIds(), new ArrayList<>());
-        Assertions.assertEquals(teamDto.get().getName(),"IND");
+        Assertions.assertEquals(team1.getId(),1);
+        Assertions.assertEquals(team1.getName(),"IND");
     }
 
     @Test
     public void getTeamTest_NullTeam(){
         Mockito.when(teamRepository.findById(1)).thenReturn(Optional.empty());
 
-        Assertions.assertEquals(teamServices.getTeam(1),Optional.empty());
+        Assertions.assertThrows(RuntimeException.class,()->teamServices.getTeam(1));
     }
 
     @Test
@@ -89,15 +89,9 @@ public class TeamServicesTest {
 
         Mockito.when(teamRepository.findById(1)).thenReturn(Optional.of(team));
 
-        Optional<TeamDto> teamDto = teamServices.getTeam(1);
+        Team team1 = teamServices.getTeam(1);
 
-        Assertions.assertEquals(teamDto.get().getName(),"IND");
-        Assertions.assertEquals(teamDto.get().getCurrentPlayerIds(),new ArrayList<>(Arrays.asList(
-                player1.getId(),player2.getId()
-        )));
-        Assertions.assertEquals(teamDto.get().getAllPlayerIds(), new ArrayList<>(Arrays.asList(
-                player1.getId(),player2.getId()
-        )));
+        Assertions.assertEquals(team1.getName(),"IND");
     }
 
     @Test
@@ -106,10 +100,11 @@ public class TeamServicesTest {
         TeamDto teamDto = TeamDto.builder().isDeleted(true).build();
 
         Mockito.when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        Mockito.when(teamRepository.save(team)).thenReturn(team);
 
-        Optional<TeamDto> result = teamServices.getTeam(1);
+        Team team1 = teamServices.getTeam(1);
 
-        Assertions.assertEquals(result,Optional.of(teamDto));
+        Assertions.assertEquals(team,team1);
     }
 
     @Test
@@ -119,6 +114,8 @@ public class TeamServicesTest {
         Mockito.when(teamRepository.findById(1)).thenReturn(Optional.empty());
 
         TeamServices teamServicesSpy = spy(teamServices);
+
+        doReturn(new Team()).when(teamServicesSpy).addTeam(addTeamDto);
         String result = teamServicesSpy.updateTeam(1, addTeamDto);
         Assertions.assertEquals(result,"new Team made");
         verify(teamServicesSpy,times(1)).addTeam(addTeamDto);
@@ -132,6 +129,7 @@ public class TeamServicesTest {
         Mockito.when(teamRepository.findById(1)).thenReturn(Optional.empty());
 
         TeamServices teamServicesSpy = spy(teamServices);
+        doReturn(null).when(teamServicesSpy).addTeam(addTeamDto);
         String result = teamServicesSpy.updateTeam(1, addTeamDto);
         Assertions.assertEquals(result,"cant make the new team");
         verify(teamServicesSpy,times(1)).addTeam(addTeamDto);

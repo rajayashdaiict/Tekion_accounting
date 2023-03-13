@@ -4,6 +4,7 @@ import com.Jpalearning.jpalearning.Entity.Player;
 import com.Jpalearning.jpalearning.dto.AddPlayerDto;
 import com.Jpalearning.jpalearning.dto.PlayerDto;
 import com.Jpalearning.jpalearning.repository.PlayerRepository;
+import com.Jpalearning.jpalearning.utils.ConstanceFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,89 +14,92 @@ import java.util.Optional;
 
 @Service
 public class PlayerServices {
+
     @Autowired
     PlayerRepository playerRepository;
     Logger logger = LoggerFactory.getLogger(PlayerServices.class);
-    public boolean addPlayer(AddPlayerDto addPlayerDto) {
 
-        logger.debug("adding player {}",addPlayerDto.getName());
-        if(addPlayerDto.getName()==null||addPlayerDto.getName().isEmpty())
-            return false;
+    public Player addPlayer(AddPlayerDto addPlayerDto) {
+
+        logger.debug("adding player {}", addPlayerDto);
+
+        if (addPlayerDto.getName() == null || addPlayerDto.getName().isEmpty()) {
+            throw new RuntimeException(ConstanceFile.INVALID_INPUT);
+        }
 
         Player player = Player.builder().name(addPlayerDto.getName()).build();
-        logger.info("saved player successfully");
-        playerRepository.save(player);
-        return true;
+        return playerRepository.save(player);
     }
 
     //if you want to delete data of player from repository
-    public boolean deletePlayer(int id){
+    public boolean deletePlayer(int id) {
         Optional<Player> player = playerRepository.findById(id);
         player.ifPresent(value -> playerRepository.delete(value));
         return true;
     }
 
-    public Optional<PlayerDto> getPlayer(int id){
+    public Optional<PlayerDto> getPlayer(int id) {
 
-        logger.debug("fetching player {}",id);
+        logger.debug("fetching player {}", id);
         Optional<Player> player = playerRepository.findById(id);
 
-        if(player.isEmpty()) {
-            logger.error("invalid player");
-            return Optional.empty();
+        if (player.isEmpty()) {
+            throw new RuntimeException(ConstanceFile.INVALID_INPUT);
         }
         PlayerDto playerDto = new PlayerDto();
 
-        if(player.get().isDeleted()){
-            logger.error("invalid player");
-            playerDto.setDeleted(true);
-            return Optional.of(playerDto);
+        if (player.get().isDeleted()) {
+            throw new RuntimeException(ConstanceFile.INVALID_INPUT);
         }
 
         playerDto.setName(player.get().getName());
         playerDto.setId(player.get().getId());
-        if(player.get().getTeam()!=null){
+        if (player.get().getTeam() != null) {
             playerDto.setTeamName(player.get().getTeam().getName());
         }
         logger.info("player fetching successful");
         return Optional.of(playerDto);
     }
 
-    public String  updatePlayer(int id,AddPlayerDto addPlayerDto){
-        logger.debug("updating player {}",id);
+    public Optional<Player> findById(int id){
+        return playerRepository.findById(id);
+    }
+    public void save(Player player){
+        playerRepository.save(player);
+    }
+
+    public Player updatePlayer(int id, AddPlayerDto addPlayerDto) {
+        logger.debug("updating player {}", id);
         Optional<Player> player = playerRepository.findById(id);
-        if(player.isEmpty()){
-            if(addPlayer(addPlayerDto)) {
+        if (player.isEmpty()) {
+            Player addPlayer = addPlayer(addPlayerDto);
+            if (addPlayer != null) {
                 logger.info("no player exist so creating a new player");
-                return "new player created";
+                return addPlayer;
+            } else {
+                throw new RuntimeException(ConstanceFile.INVALID_INPUT);
             }
-            else {
-                logger.error("cant update player");
-                return "cant update player";
-            }
-        }
-        else {
-            if(addPlayerDto.getName()==null||addPlayerDto.getName().isEmpty()) {
-                logger.error("cant update player");
-                return "cant update player";
+        } else {
+            if (addPlayerDto.getName() == null || addPlayerDto.getName().isEmpty()) {
+                throw new RuntimeException(ConstanceFile.INVALID_INPUT);
             }
             player.get().setName(addPlayerDto.getName());
-            playerRepository.save(player.get());
+            Player updatedPlayer = playerRepository.save(player.get());
             logger.info("player updated");
-            return "player updated";
+            return updatedPlayer;
         }
     }
-    public boolean softDelete(int id){
-        logger.debug("deleting player {}",id);
+
+    public Player softDelete(int id) {
+        logger.debug("deleting player {}", id);
         Optional<Player> player = playerRepository.findById(id);
-        if(player.isEmpty()){
-            logger.error("invalid player");
-            return false;
+        if (player.isEmpty()) {
+            throw new RuntimeException(ConstanceFile.INVALID_INPUT);
         }
         player.get().setDeleted(true);
         player.get().setTeam(null);
-        playerRepository.save(player.get());
+        Player player1 = playerRepository.save(player.get());
         logger.info("player deleted");
-        return true;
+        return player1;
     }
 }

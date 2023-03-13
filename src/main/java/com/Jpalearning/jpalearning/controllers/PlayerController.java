@@ -1,43 +1,63 @@
 package com.Jpalearning.jpalearning.controllers;
 
+import com.Jpalearning.jpalearning.Entity.Player;
 import com.Jpalearning.jpalearning.dto.AddPlayerDto;
 import com.Jpalearning.jpalearning.dto.PlayerDto;
 import com.Jpalearning.jpalearning.service.PlayerServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/players")
+@RequestMapping("/cricket/player")
 public class PlayerController {
     @Autowired
     PlayerServices playerServices;
 
-    @PostMapping("/add")
-    public String addPlayer(@RequestBody AddPlayerDto addPlayerDto){
-        if(playerServices.addPlayer(addPlayerDto)){
-            return "Success";
+    @PostMapping("/")
+    public ResponseEntity<Player> addPlayer(@RequestBody AddPlayerDto addPlayerDto){
+        Player player;
+        try {
+            player = playerServices.addPlayer(addPlayerDto);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        else
-            return "Error";
+        return new ResponseEntity<>(player, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public String deletePlayer(@PathVariable int id){
-        if(playerServices.softDelete(id)){
-            return "Success";
+    public ResponseEntity<Player> deletePlayer(@PathVariable int id){
+        Player player;
+        try {
+            player = playerServices.softDelete(id);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        else
-            return "Error";
+        return new ResponseEntity<>(player, HttpStatus.OK);
     }
     @GetMapping("/{id}")
-    public Optional<PlayerDto> getPlayer(@PathVariable int id){
-        return playerServices.getPlayer(id);
+    public ResponseEntity<PlayerDto> getPlayer(@PathVariable int id){
+        Optional<PlayerDto>  player;
+        try {
+            player = playerServices.getPlayer(id);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(player.get(), HttpStatus.OK);
+
     }
     @PutMapping("/{id}")
-    public String updatePlayer(@PathVariable int id,@RequestBody AddPlayerDto addPlayerDto){
-        return playerServices.updatePlayer(id,addPlayerDto);
+    public ResponseEntity<Player> updatePlayer(@PathVariable int id,@RequestBody AddPlayerDto addPlayerDto){
+        Player player;
+        try {
+            player = playerServices.updatePlayer(id, addPlayerDto);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(player, HttpStatus.OK);
     }
 
 

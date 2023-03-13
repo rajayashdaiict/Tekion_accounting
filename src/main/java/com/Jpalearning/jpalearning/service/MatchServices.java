@@ -8,6 +8,7 @@ import com.Jpalearning.jpalearning.dto.MatchCreateDto;
 import com.Jpalearning.jpalearning.repository.MatchRepository;
 import com.Jpalearning.jpalearning.repository.PlayerRepository;
 import com.Jpalearning.jpalearning.repository.TeamRepository;
+import com.Jpalearning.jpalearning.utils.ConstanceFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +23,17 @@ import java.util.Optional;
 public class MatchServices {
 
     @Autowired
-    TeamRepository teamRepository;
-    @Autowired
-    PlayerRepository playerRepository;
-    @Autowired
     MatchRepository matchRepository;
     @Autowired
     MongoServices mongoServices;
+    @Autowired
+    TeamServices teamServices;
+    @Autowired
+    PlayerServices playerServices;
+    @Autowired
+    TeamRepository teamRepository;
+    @Autowired
+    PlayerRepository playerRepository;
 
     Logger logger = LoggerFactory.getLogger(MatchServices.class);
 
@@ -135,7 +140,7 @@ public class MatchServices {
         }
         for (Integer playerId : playerIds) {
 
-            Optional<Player> player = playerRepository.findById(playerId);
+            Optional<Player> player = playerServices.findById(playerId);
             if (player.isEmpty()) {
                 logger.error("invalid player");
                 return false;
@@ -146,14 +151,14 @@ public class MatchServices {
             }
 
             player.get().setTeam(team);
-            playerRepository.save(player.get());
+            playerServices.save(player.get());
 
             team.getAllPlayers().add(player.get());
             team.getPlayers().add(player.get());
 
         }
         logger.info("players added into team");
-        teamRepository.save(team);
+        teamServices.save(team);
         return true;
     }
 

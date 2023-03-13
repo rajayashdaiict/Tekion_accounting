@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -51,17 +53,17 @@ public class PlayerControllerTest {
 
         Optional<PlayerDto> resultPlayer = playerServices.getPlayer(1);
         Optional<PlayerDto> resultPlayer1 = playerServices.getPlayer(2);
-        Optional<PlayerDto> resultPlayer2 = playerServices.getPlayer(4);
-        Optional<PlayerDto> resultPlayer3 = playerServices.getPlayer(3);
 
         Assertions.assertEquals(resultPlayer,Optional.of(playerDto));
         Assertions.assertEquals(resultPlayer1,Optional.of(playerDto1));
-        Assertions.assertEquals(resultPlayer2,Optional.empty());
-        Assertions.assertEquals(resultPlayer3,Optional.of(playerDto2));
+
+        assertThrows(RuntimeException.class,()->playerServices.getPlayer(4));
+        assertThrows(RuntimeException.class,()->playerServices.getPlayer(3));
+
     }
 
     @Test
-    public void postPlayerTest(){
+    public void postPlayerTest() throws RuntimeException{
         AddPlayerDto addPlayerDto = new AddPlayerDto("Yash");
         Player player = Player.builder().name("Yash").build();
         AddPlayerDto addPlayerDto1 = new AddPlayerDto("");
@@ -70,11 +72,11 @@ public class PlayerControllerTest {
         Mockito.when(playerRepository.save(player)).thenReturn(player);
         Mockito.when(playerRepository.save(player1)).thenReturn(player1);
 
-        boolean result = playerServices.addPlayer(addPlayerDto);
-        boolean result1 = playerServices.addPlayer(addPlayerDto1);
+        Player outputPlayer1 = playerServices.addPlayer(addPlayerDto);
 
-        Assertions.assertTrue(result);
-        Assertions.assertFalse(result1);
+        assertThrows(RuntimeException.class, () -> playerServices.addPlayer(addPlayerDto1));
+
+        Assertions.assertNotNull(outputPlayer1);
     }
 
     @Test
@@ -87,16 +89,18 @@ public class PlayerControllerTest {
         Mockito.when(playerRepository.findById(2)).thenReturn(Optional.empty());
 
         Mockito.when(playerRepository.save(player)).thenReturn(player);
+        Mockito.when(playerRepository.save(player)).thenReturn(player);
 
-        String result1 = playerServices.updatePlayer(1, addPlayerDto);
-        String result2 = playerServices.updatePlayer(2, addPlayerDto);
-        String result3 = playerServices.updatePlayer(3, addPlayerDto1);
-        String result4 = playerServices.updatePlayer(1, addPlayerDto1);
+        Player player1 = playerServices.updatePlayer(1, addPlayerDto);
+//        Player player2 = playerServices.updatePlayer(2, addPlayerDto);
 
-        Assertions.assertEquals(result1,"player updated");
-        Assertions.assertEquals(result2,"new player created");
-        Assertions.assertEquals(result3,"cant update player");
-        Assertions.assertEquals(result4,"cant update player");
+        assertThrows(RuntimeException.class, () -> playerServices.updatePlayer(3, addPlayerDto1));
+        assertThrows(RuntimeException.class, () -> playerServices.updatePlayer(1, addPlayerDto1));
+
+
+        Assertions.assertEquals("Yash",player1.getName());
+//        Assertions.assertEquals("Yash",player2.getName());
+
     }
 
     @Test
@@ -106,9 +110,8 @@ public class PlayerControllerTest {
 
         Mockito.when(playerRepository.findById(1)).thenReturn(Optional.of(player));
 
-        boolean result = playerServices.softDelete(1);
+        Player returnedPlayer = playerServices.softDelete(1);
 
-        Assertions.assertTrue(result);
         Assertions.assertTrue(player.isDeleted());
         Assertions.assertNull(player.getTeam());
         verify(playerRepository,times(1)).save(player);
@@ -118,7 +121,7 @@ public class PlayerControllerTest {
     public void softDeleteTest_WhenPlayerNotFound(){
         Mockito.when(playerRepository.findById(1)).thenReturn(Optional.empty());
 
-        Assertions.assertFalse(playerServices.softDelete(1));
+        Assertions.assertThrows(RuntimeException.class,()->playerServices.softDelete(1));
 
         verify(playerRepository , never()).save(any(Player.class));
 

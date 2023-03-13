@@ -9,11 +9,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/match")
+@RequestMapping("/cricket/match")
 public class MatchController {
     @Autowired
     MatchServices matchServices;
-    @PostMapping("/create")
+    @PostMapping("/")
     public int createMatch(@RequestBody MatchCreateDto matchCreateDto){
         return matchServices.createMatch(matchCreateDto);
     }
@@ -22,11 +22,11 @@ public class MatchController {
     public String updateMatch(@RequestBody MatchCreateDto matchCreateDto,@PathVariable int id){
         return matchServices.updateMatch(matchCreateDto,id);
     }
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public Object getMatch(@PathVariable int id){
         return matchServices.getMatch(id);
     }
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public String deleteMatch(@PathVariable int id){
         return matchServices.deleteMatch(id);
     }

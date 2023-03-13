@@ -9,6 +9,9 @@ import com.Jpalearning.jpalearning.repository.PlayerRepository;
 import com.Jpalearning.jpalearning.repository.TeamRepository;
 import com.Jpalearning.jpalearning.service.MatchServices;
 import com.Jpalearning.jpalearning.service.MongoServices;
+import com.Jpalearning.jpalearning.service.PlayerServices;
+import com.Jpalearning.jpalearning.service.TeamServices;
+import com.Jpalearning.jpalearning.utils.ConstanceFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +34,10 @@ public class MatchServicesTest {
 
     @Mock
     PlayerRepository playerRepository;
+    @Mock
+    PlayerServices playerServices;
+    @Mock
+    TeamServices teamServices;
     @Mock
     TeamRepository teamRepository;
     @Mock
@@ -60,16 +67,16 @@ public class MatchServicesTest {
         Player player = Player.builder().name("dbajk").id(1).build();
         Player player1 = Player.builder().name("dhasb").id(2).build();
 
-        Mockito.when(playerRepository.findById(1)).thenReturn(Optional.of(player));
-        Mockito.when(playerRepository.findById(2)).thenReturn(Optional.of(player1));
+        Mockito.when(playerServices.findById(1)).thenReturn(Optional.of(player));
+        Mockito.when(playerServices.findById(2)).thenReturn(Optional.of(player1));
 
         boolean result = matchServices.addPlayersIntoTeam(players, team);
 
         Assertions.assertTrue(result);
-        verify(playerRepository, times(players.size())).save(any(Player.class));
+        verify(playerServices, times(players.size())).save(any(Player.class));
         Assertions.assertNotNull(team.getPlayers());
         Assertions.assertNotNull(team.getAllPlayers());
-        verify(teamRepository, times(1)).save(any(Team.class));
+        verify(teamServices, times(1)).save(any(Team.class));
     }
 
 
@@ -88,8 +95,10 @@ public class MatchServicesTest {
         Team team = Team.builder().id(1).name("IND").build();
         Team team1 = Team.builder().id(2).name("AUS").build();
 
-        Mockito.when(teamRepository.findById(3)).thenReturn(Optional.empty());
-        Mockito.when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+//        Mockito.when(teamServices.getTeam(3)).thenReturn(Optional.empty());
+//        Assertions.assertThrows(RuntimeException.class,()->teamServices.getTeam(3));
+        Mockito.when(teamServices.getTeam(3)).thenThrow(new RuntimeException(ConstanceFile.INVALID_INPUT));
+        Mockito.when(teamServices.getTeam(1)).thenReturn(team);
 
         int matchId = matchServices.createMatch(matchCreateDto);
 

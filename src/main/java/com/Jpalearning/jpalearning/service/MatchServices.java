@@ -3,12 +3,8 @@ package com.Jpalearning.jpalearning.service;
 import com.Jpalearning.jpalearning.Entity.Match;
 import com.Jpalearning.jpalearning.Entity.Player;
 import com.Jpalearning.jpalearning.Entity.Team;
-import com.Jpalearning.jpalearning.dto.AddPlayerIntoTeamDto;
 import com.Jpalearning.jpalearning.dto.MatchCreateDto;
 import com.Jpalearning.jpalearning.repository.MatchRepository;
-import com.Jpalearning.jpalearning.repository.PlayerRepository;
-import com.Jpalearning.jpalearning.repository.TeamRepository;
-import com.Jpalearning.jpalearning.utils.ConstanceFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -30,10 +25,6 @@ public class MatchServices {
     TeamServices teamServices;
     @Autowired
     PlayerServices playerServices;
-    @Autowired
-    TeamRepository teamRepository;
-    @Autowired
-    PlayerRepository playerRepository;
 
     Logger logger = LoggerFactory.getLogger(MatchServices.class);
 
@@ -42,8 +33,8 @@ public class MatchServices {
         logger.info("creating a match");
         logger.trace("validation started for creating a team");
         //getting teams from team ids
-        Optional<Team> team1 = teamRepository.findById(matchCreateDto.getTeam1Id());
-        Optional<Team> team2 = teamRepository.findById(matchCreateDto.getTeam2Id());
+        Optional<Team> team1 = teamServices.findById(matchCreateDto.getTeam1Id());
+        Optional<Team> team2 = teamServices.findById(matchCreateDto.getTeam2Id());
 
         if (team1.isEmpty() || team2.isEmpty()) {
             logger.error("invalid teams");
@@ -80,8 +71,8 @@ public class MatchServices {
             return "match is already played";
         }
         match.get().setOvers(matchCreateDto.getOvers());
-        Optional<Team> team1 = teamRepository.findById(matchCreateDto.getTeam1Id());
-        Optional<Team> team2 = teamRepository.findById(matchCreateDto.getTeam2Id());
+        Optional<Team> team1 = teamServices.findById(matchCreateDto.getTeam1Id());
+        Optional<Team> team2 = teamServices.findById(matchCreateDto.getTeam2Id());
 
         logger.info("updating team1");
         if(team1.isPresent()){
@@ -175,5 +166,12 @@ public class MatchServices {
         logger.info("match deleted successfully");
         matchRepository.deleteById(id);
         return "match is removed";
+    }
+
+    public Optional<Match> findById(int id){
+        return matchRepository.findById(id);
+    }
+    public Match save(Match match){
+        return matchRepository.save(match);
     }
 }

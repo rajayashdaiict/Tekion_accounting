@@ -87,6 +87,10 @@ public class TeamServices {
         }
     }
 
+    public Optional<Team> findById(int id){
+        return teamRepository.findById(id);
+    }
+
 
     public String updateTeam(int id, AddTeamDto addTeamDto) {
         logger.debug("updating team {}", id);

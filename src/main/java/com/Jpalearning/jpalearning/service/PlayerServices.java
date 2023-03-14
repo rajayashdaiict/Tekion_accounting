@@ -61,12 +61,6 @@ public class PlayerServices {
         return Optional.of(playerDto);
     }
 
-    public Optional<Player> findById(int id){
-        return playerRepository.findById(id);
-    }
-    public void save(Player player){
-        playerRepository.save(player);
-    }
 
     public Player updatePlayer(int id, AddPlayerDto addPlayerDto) {
         logger.debug("updating player {}", id);
@@ -101,5 +95,13 @@ public class PlayerServices {
         Player player1 = playerRepository.save(player.get());
         logger.info("player deleted");
         return player1;
+    }
+
+    //these functions to use in match service
+    public Optional<Player> findById(int id){
+        return playerRepository.findById(id);
+    }
+    public void save(Player player){
+        playerRepository.save(player);
     }
 }

@@ -19,11 +19,11 @@ import java.util.Optional;
 public class CricketServices {
 
     @Autowired
-    PlayerRepository playerRepository;
+    PlayerServices playerServices;
     @Autowired
-    TeamRepository teamRepository;
+    TeamServices teamServices;
     @Autowired
-    MatchRepository matchRepository;
+    MatchServices matchServices;
     @Autowired
     GameplayService gameplayService;
 
@@ -31,9 +31,9 @@ public class CricketServices {
 
     public boolean addPlayerIntoTeam(AddPlayerIntoTeamDto addPlayerIntoTeamDto) {
 
-        logger.debug("adding player {} into team {}", addPlayerIntoTeamDto.getPlayerId(),
-                addPlayerIntoTeamDto.getTeamId());
-        Optional<Player> player = playerRepository.findById(addPlayerIntoTeamDto.getPlayerId());
+        logger.debug("adding player {} into team {}", addPlayerIntoTeamDto,
+                addPlayerIntoTeamDto);
+        Optional<Player> player = playerServices.findById(addPlayerIntoTeamDto.getPlayerId());
         logger.debug("validation started for adding player into team");
         if (player.isEmpty()) {
             logger.error("invalid player");
@@ -44,7 +44,7 @@ public class CricketServices {
             return false;
         }
 
-        Optional<Team> team = teamRepository.findById(addPlayerIntoTeamDto.getTeamId());
+        Optional<Team> team = teamServices.findById(addPlayerIntoTeamDto.getTeamId());
         if (team.isEmpty() || team.get().isDeleted()) {
             logger.error("invalid team");
             return false;
@@ -52,14 +52,14 @@ public class CricketServices {
         logger.debug("validation done for player and team");
         team.get().getAllPlayers().add(player.get());
         player.get().setTeam(team.get());
-        playerRepository.save(player.get());
+        playerServices.save(player.get());
         logger.info("adding player into team successfully");
         return true;
     }
 
     public MatchResultDto matchPlay(int matchId) {
         logger.info("starting a match {}",matchId);
-        Optional<Match> match = matchRepository.findById(matchId);
+        Optional<Match> match = matchServices.findById(matchId);
         MatchResultDto matchResultDto = new MatchResultDto();
         logger.debug("validation started for match");
         if (match.isEmpty()) {
@@ -86,7 +86,7 @@ public class CricketServices {
         logger.debug("gameplay service finished");
         match.get().setWinner(winnerTeam);
 
-        matchRepository.save(match.get());
+        matchServices.save(match.get());
         logger.info("match successfully saved");
         matchResultDto.setWinnerTeam(winnerTeam);
 
@@ -97,12 +97,13 @@ public class CricketServices {
     public Optional<ScoreCardOutputDto> scorecard(int matchId) {
         logger.info("fetching scorecard for match {}",matchId);
         logger.debug("validation started for match/scorecard");
+        Optional<Match> matchOptional = matchServices.findById(matchId);
         Match match;
-        if (matchRepository.findById(matchId).isEmpty()) {
+        if (matchOptional.isEmpty()) {
             logger.error("invalid match");
             return Optional.empty();
         } else {
-            match = matchRepository.findById(matchId).get();
+            match = matchOptional.get();
         }
         ScoreCardOutputDto scoreCardOutputDto = new ScoreCardOutputDto();
         scoreCardOutputDto.setMatchId(matchId);

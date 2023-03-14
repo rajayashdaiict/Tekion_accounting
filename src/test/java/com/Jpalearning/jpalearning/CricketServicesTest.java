@@ -10,9 +10,7 @@ import com.Jpalearning.jpalearning.dto.ScoreCardOutputDto;
 import com.Jpalearning.jpalearning.repository.MatchRepository;
 import com.Jpalearning.jpalearning.repository.PlayerRepository;
 import com.Jpalearning.jpalearning.repository.TeamRepository;
-import com.Jpalearning.jpalearning.service.CricketServices;
-import com.Jpalearning.jpalearning.service.GameplayService;
-import com.Jpalearning.jpalearning.service.MatchServices;
+import com.Jpalearning.jpalearning.service.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,13 +31,13 @@ import java.util.Optional;
 public class CricketServicesTest {
 
     @Mock
-    PlayerRepository playerRepository;
-    @Mock
-    TeamRepository teamRepository;
-    @Mock
-    MatchRepository matchRepository;
-    @Mock
     GameplayService gameplayService;
+    @Mock
+    PlayerServices playerServices;
+    @Mock
+    TeamServices teamServices;
+    @Mock
+    MatchServices matchServices;
     @InjectMocks
     CricketServices cricketServices;
     @BeforeEach
@@ -52,8 +50,8 @@ public class CricketServicesTest {
 
         Player player = Player.builder().name("yash").id(2).isDeleted(true).build();
 
-        Mockito.when(playerRepository.findById(1)).thenReturn(Optional.empty());
-        Mockito.when(playerRepository.findById(2)).thenReturn(Optional.of(player));
+        Mockito.when(playerServices.findById(1)).thenReturn(Optional.empty());
+        Mockito.when(playerServices.findById(2)).thenReturn(Optional.of(player));
 
         AddPlayerIntoTeamDto addPlayerIntoTeamDto1 = new AddPlayerIntoTeamDto(1,1);
         AddPlayerIntoTeamDto addPlayerIntoTeamDto2 = new AddPlayerIntoTeamDto(2,1);
@@ -63,7 +61,7 @@ public class CricketServicesTest {
 
         Assertions.assertFalse(result1);
         Assertions.assertFalse(result2);
-        verify(playerRepository,never()).save(any(Player.class));
+        verify(playerServices,never()).save(any(Player.class));
 
 
     }
@@ -72,9 +70,9 @@ public class CricketServicesTest {
         Player player = Player.builder().name("yash").id(1).build();
         Team team = Team.builder().name("IND").id(1).isDeleted(true).build();
 
-        Mockito.when(playerRepository.findById(1)).thenReturn(Optional.of(player));
-        Mockito.when(teamRepository.findById(1)).thenReturn(Optional.of(team));
-        Mockito.when(teamRepository.findById(2)).thenReturn(Optional.empty());
+        Mockito.when(playerServices.findById(1)).thenReturn(Optional.of(player));
+        Mockito.when(teamServices.findById(1)).thenReturn(Optional.of(team));
+        Mockito.when(teamServices.findById(2)).thenReturn(Optional.empty());
 
         AddPlayerIntoTeamDto addPlayerIntoTeamDto1 = new AddPlayerIntoTeamDto(1,1);
         AddPlayerIntoTeamDto addPlayerIntoTeamDto2 = new AddPlayerIntoTeamDto(1,1);
@@ -84,7 +82,7 @@ public class CricketServicesTest {
 
         Assertions.assertFalse(result1);
         Assertions.assertFalse(result2);
-        verify(playerRepository,never()).save(any(Player.class));
+        verify(playerServices,never()).save(any(Player.class));
 
     }
     @Test
@@ -92,8 +90,8 @@ public class CricketServicesTest {
         Player player = Player.builder().name("yash").id(1).build();
         Team team = Team.builder().name("IND").id(1).players(new ArrayList<>()).allPlayers(new ArrayList<>()).build();
 
-        Mockito.when(playerRepository.findById(1)).thenReturn(Optional.of(player));
-        Mockito.when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        Mockito.when(playerServices.findById(1)).thenReturn(Optional.of(player));
+        Mockito.when(teamServices.findById(1)).thenReturn(Optional.of(team));
 
         AddPlayerIntoTeamDto addPlayerIntoTeamDto = new AddPlayerIntoTeamDto(1,1);
         boolean result = cricketServices.addPlayerIntoTeam(addPlayerIntoTeamDto);
@@ -101,13 +99,13 @@ public class CricketServicesTest {
         Assertions.assertTrue(result);
         Assertions.assertNotNull(team.getAllPlayers());
         Assertions.assertEquals(team,player.getTeam());
-        verify(playerRepository,times(1)).save(player);
+        verify(playerServices,times(1)).save(player);
     }
 
     @Test
     public void matchPlayTest_NoMatchFound(){
         int id = 1;
-        when(matchRepository.findById(id)).thenReturn(Optional.empty());
+        when(matchServices.findById(id)).thenReturn(Optional.empty());
 
         MatchResultDto matchResultDto = cricketServices.matchPlay(id);
 
@@ -121,7 +119,7 @@ public class CricketServicesTest {
         Team team = Team.builder().name("IND").id(1).build();
         Match match = Match.builder().id(id).winner(team).build();
 
-        when(matchRepository.findById(id)).thenReturn(Optional.ofNullable(match));
+        when(matchServices.findById(id)).thenReturn(Optional.ofNullable(match));
 
         MatchResultDto matchResultDto = cricketServices.matchPlay(id);
         Assertions.assertNotNull(matchResultDto);
@@ -137,7 +135,7 @@ public class CricketServicesTest {
 
         Match match = Match.builder().team2(team1).team1(team).id(id).build();
 
-        when(matchRepository.findById(id)).thenReturn(Optional.ofNullable(match));
+        when(matchServices.findById(id)).thenReturn(Optional.ofNullable(match));
 
         MatchResultDto matchResultDto = cricketServices.matchPlay(id);
 
@@ -170,20 +168,20 @@ public class CricketServicesTest {
 
         GameplayDto gameplayDto = new GameplayDto(team,team1,10,match);
 
-        when(matchRepository.findById(id)).thenReturn(Optional.ofNullable(match));
+        when(matchServices.findById(id)).thenReturn(Optional.ofNullable(match));
         when(gameplayService.gameplay(gameplayDto)).thenReturn(team);
 
         MatchResultDto matchResultDto = cricketServices.matchPlay(id);
         Assertions.assertNotNull(matchResultDto);
         Assertions.assertEquals(team,matchResultDto.getWinnerTeam());
         verify(gameplayService,times(1)).gameplay(gameplayDto);
-        verify(matchRepository,times(1)).save(match);
+        verify(matchServices,times(1)).save(match);
 
     }
     @Test
     public void scoreCardTest_InvalidMatch(){
         int id = 1;
-        when(matchRepository.findById(id)).thenReturn(Optional.empty());
+        when(matchServices.findById(id)).thenReturn(Optional.empty());
 
         Optional<ScoreCardOutputDto> scorecard = cricketServices.scorecard(id);
 
@@ -198,7 +196,7 @@ public class CricketServicesTest {
 
         Match match = Match.builder().team2(team1).team1(team).id(id).build();
 
-        when(matchRepository.findById(id)).thenReturn(Optional.ofNullable(match));
+        when(matchServices.findById(id)).thenReturn(Optional.ofNullable(match));
 
         Optional<ScoreCardOutputDto> scorecard = cricketServices.scorecard(id);
 

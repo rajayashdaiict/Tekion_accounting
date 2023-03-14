@@ -32,14 +32,11 @@ import java.util.Optional;
 @SpringBootTest
 public class MatchServicesTest {
 
-    @Mock
-    PlayerRepository playerRepository;
+
     @Mock
     PlayerServices playerServices;
     @Mock
     TeamServices teamServices;
-    @Mock
-    TeamRepository teamRepository;
     @Mock
     MatchRepository matchRepository;
     @Mock
@@ -121,8 +118,8 @@ public class MatchServicesTest {
         Team team = Team.builder().id(1).name("IND").isDeleted(true).build();
         Team team1 = Team.builder().id(2).name("AUS").build();
 
-        Mockito.when(teamRepository.findById(2)).thenReturn(Optional.of(team1));
-        Mockito.when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        Mockito.when(teamServices.findById(2)).thenReturn(Optional.of(team1));
+        Mockito.when(teamServices.findById(1)).thenReturn(Optional.of(team));
 
         int matchId = matchServices.createMatch(matchCreateDto);
         Assertions.assertEquals(matchId, 0);
@@ -149,8 +146,8 @@ public class MatchServicesTest {
 
         MatchServices matchServicesSpy = Mockito.spy(matchServices);
 
-        Mockito.when(teamRepository.findById(2)).thenReturn(Optional.of(team1));
-        Mockito.when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        Mockito.when(teamServices.findById(2)).thenReturn(Optional.of(team1));
+        Mockito.when(teamServices.findById(1)).thenReturn(Optional.of(team));
 
         doReturn(true).when(matchServicesSpy).addPlayersIntoTeam(matchCreateDto.getPlayerIdsTeam1(), team);
         doReturn(true).when(matchServicesSpy).addPlayersIntoTeam(matchCreateDto.getPlayerIdsTeam2(), team1);
@@ -205,8 +202,8 @@ public class MatchServicesTest {
         MatchServices matchServicesSpy = spy(matchServices);
 
         Mockito.when(matchRepository.findById(1)).thenReturn(Optional.of(match));
-        Mockito.when(teamRepository.findById(2)).thenReturn(Optional.of(team2));
-        Mockito.when(teamRepository.findById(1)).thenReturn(Optional.of(team1));
+        Mockito.when(teamServices.findById(2)).thenReturn(Optional.of(team2));
+        Mockito.when(teamServices.findById(1)).thenReturn(Optional.of(team1));
 
         doReturn(true).when(matchServicesSpy).addPlayersIntoTeam(matchCreateDto.getPlayerIdsTeam1(), team1);
         doReturn(true).when(matchServicesSpy).addPlayersIntoTeam(matchCreateDto.getPlayerIdsTeam2(), team2);
